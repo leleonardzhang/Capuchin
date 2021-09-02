@@ -129,7 +129,7 @@ def encode(model) -> list:
     return encode_list
 
 
-def encode_seperate(model) -> list:
+def encode_separate(model) -> list:
     encode_list = []
     if encode_model(model) == -1:
         return encode_list
