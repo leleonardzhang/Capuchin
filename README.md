@@ -6,7 +6,7 @@ This project are made into two parts: a Python interface `encoder.py` and the mi
 
 ## Getting Started
 ### Dependencies
-*Disclaim: following dependencies are only author's recommended setup. This project was tested under following dependencies and verified as correct. This project may work under other versions of dependencies but the correctness may not be guaranteed.*
+Disclaim: following dependencies are only author's recommended setup. This project was tested under following dependencies and verified as correct. This project may work under other versions of dependencies but the correctness may not be guaranteed.
 
 + tensorflow=2.6.0
 + keras=2.6.0
