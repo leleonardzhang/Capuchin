@@ -59,6 +59,7 @@ Due to the hardware constraints of MSP430, the C implementation should meet the 
 
 ## Contact
 Le Zhang - lezhang at unc.edu
+
 Project Link: https://github.com/leleonardzhang/uDNN-tf2msp
 
 ## Credits
