@@ -58,7 +58,7 @@ Due to the hardware constraints of MSP430, the C implementation should meet the 
 + `LENGTH_OF_ANY_LAYER_OUTPUT <= 16384` (FRAM persistent memory constraint)
 
 ## Contact
-Le Zhang - lezhang at unc.edu
+Le Zhang - Email: lezhang at unc.edu
 
 Project Link: https://github.com/leleonardzhang/uDNN-tf2msp
 
