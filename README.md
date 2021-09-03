@@ -2,7 +2,7 @@
 ## About This
 This repository stores an automation tool designed to implement the inference of Python Tensorflow uDNN (micro deep neural network) models on TI MSP430FR5994 microcontrollers.
 
-This project are made into two parts: a Python interface `encoder.py` and the microcontroller C implementation `uDNN-tf2msp-msp_impl`. The Python interface is built with a function that takes `tensorflow.keras.Model` objects as the argument to extract uDNN model configuration and generates a compiled header file `decoder.h` that can be used to compile along with the microcontroller C implementation. The microcontroller C implementation extracts the model configuration array in the header file `decoder.h`, builds a uDNN model on MSP430FR5994 by calling a sequence of uDNN layer implemetations, and feeds the sample dataset input into the uDNN model to compute the inference output.
+This project is made into two parts: a Python interface `encoder.py` and the microcontroller C implementation `uDNN-tf2msp-msp_impl`. The Python interface is built with a function that takes `tensorflow.keras.Model` objects as the argument to extract uDNN model configuration and generates a compiled header file `decoder.h` that can be used to compile along with the microcontroller C implementation. The microcontroller C implementation extracts the model configuration array in the header file `decoder.h`, builds a uDNN model on MSP430FR5994 by calling a sequence of uDNN layer implemetations, and feeds the sample dataset input into the uDNN model to compute the inference output.
 
 ## Getting Started
 ### Dependencies
