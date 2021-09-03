@@ -30,7 +30,7 @@ Disclaim: the following dependencies are only author's recommended setup. This p
 
     `cp {UDNN_PYTHON_IMPL_DIR}/decoder.h {TF2MSP_PROJECT_DIR}/uDNN-tf2msp/uDNN-tf2msp-msp_impl/decoder`
 2. Open `{TF2MSP_PROJECT_DIR}/uDNN-tf2msp/uDNN-tf2msp-msp_impl` as a TI CCS project.
-3. Edit the desired input data with correct dimensions and adjust the output labels with correct dimensions.
+3. Edit the desired input data with correct dimensions and adjust the output labels with correct dimensions in `uDNN-tf2msp/uDNN-tf2msp-msp_impl/main.c`.
 4. Compile and Run the inference on MSP430.
 
 ## Supports
