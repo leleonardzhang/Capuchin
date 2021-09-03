@@ -57,6 +57,10 @@ Due to the hardware constraints of MSP430, the C implementation should meet the 
 + `LEA_RAM_SIZE <= 1.8K` (LEA SRAM volatile memory constraint)
 + `LENGTH_OF_ANY_LAYER_OUTPUT <= 16384` (FRAM persistent memory constraint)
 
+## Contact
+Le Zhang - lezhang at unc.edu
+Project Link: https://github.com/leleonardzhang/uDNN-tf2msp
+
 ## Credits
 This project is built on the framework of <a href="https://github.com/tejaskannan/budget-rnn">budgetRNN</a>.
 
