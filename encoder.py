@@ -179,7 +179,11 @@ def export_model(model):
     output_str = \
 """#include "../math/matrix.h"
 #include "neural_network_parameters.h"
-#include "neural_network.h"
+#include "math/matrix_ops.h"
+#include "math/fixed_point_ops.h"
+#include "math/matrix.h"
+#include "utils/utils.h"
+#include "layers/layers.h"
 
 #ifndef DECODER_GUARD
 #define DECODER_GUARD
