@@ -43,14 +43,14 @@ matrix *maxpooling(matrix* result, matrix *input, uint16_t pool_numRows, uint16_
             for (kx = 0; kx < pool_numRows; kx ++){
                 for (ky = 0; ky < pool_numCols; ky ++){
                     // traverse the entire sub-block that are related to this pooling
-                    input_offset = (x + kx) * input->numRows + (y + ky);
+                    input_offset = (x + kx) * input->numCols + (y + ky);
                     if (max < input->data[input_offset]){
                         max = input->data[input_offset];  // if a bigger number found, update max
                     }
 
                 }
             }
-            result_offset = i * result_numRows + j;
+            result_offset = i * result_numCols + j;
             result->data[result_offset] = max;
 
         }
