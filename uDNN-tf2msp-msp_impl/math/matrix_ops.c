@@ -15,7 +15,7 @@ static uint16_t SPARSEMAX_BUFFER[NUM_OUTPUTS] = {0};
  *  This part of memory is used when executing LEA matrix multiplication and element-wise multiplication.
  */
 DSPLIB_DATA(MULTIPLY_BUFFER, 4);
-static dtype MULTIPLY_BUFFER[1800];
+static dtype MULTIPLY_BUFFER[LEA_RAM_LENGTH];
 
 matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols){
     /*

@@ -7,9 +7,9 @@
 
 /* used to save the results of each layer and prevent data overwrite */
 #pragma PERSISTENT(MODEL_ARRAY_OUTPUT)
-static int16_t MODEL_ARRAY_OUTPUT[16384] = {0};
+static int16_t MODEL_ARRAY_OUTPUT[MODEL_ARRAY_OUTPUT_LENGTH] = {0};
 #pragma PERSISTENT(MODEL_ARRAY_TEMP)
-static int16_t MODEL_ARRAY_TEMP[16384] = {0};
+static int16_t MODEL_ARRAY_TEMP[MODEL_ARRAY_TEMP_LENGTH] = {0};
 
 matrix *apply_model(matrix *output, matrix *input){
 
@@ -31,7 +31,7 @@ matrix *apply_model(matrix *output, matrix *input){
             // next element of the array tells the layer class
 
             /* layer class 0 - DENSE */
-            if (array[i] == 0){
+            if (array[i] == DENSE_LAYER){
                 numFilters = 1;
 
                 // extract and prepare layer parameters
@@ -62,7 +62,7 @@ matrix *apply_model(matrix *output, matrix *input){
                 matrix bias = {bias_array, bias_numRows, bias_numCols};
 
                 // execute dense layer
-                if (activation == 2){
+                if (activation == RELU_ACTIVATION){
                     dense(output, input, &kernel, &bias, &fp_relu, FIXED_POINT_PRECISION);
                 }
                 else{
@@ -71,7 +71,7 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 1 - LeakyReLU */
-            else if (array[i] == 1){
+            else if (array[i] == LEAKY_RELU_LAYER){
                 output->numRows = input->numRows;
                 output->numCols = input->numCols;
                 apply_leakyrelu(output, input, FIXED_POINT_PRECISION);
@@ -79,7 +79,7 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 2 - Conv2D */
-            else if (array[i] == 2){
+            else if (array[i] == CONV2D_LAYER){
 
                 // extract and prepare layer parameters
                 layer_class = array[i];
@@ -126,7 +126,7 @@ matrix *apply_model(matrix *output, matrix *input){
 
 
                 // execute conv2d layer
-                if (activation == 2){
+                if (activation == RELU_ACTIVATION){
                     conv2d(output, input, &filters, numFilters, numChannels, bias_array, &fp_relu, FIXED_POINT_PRECISION, stride_numRows, stride_numCols, padding);
                 }
                 else{
@@ -136,7 +136,7 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 3 - MaxPooling2D */
-            else if (array[i] == 3){
+            else if (array[i] == MAXPOOLING2D_LAYER){
                 uint16_t pool_numRows = array[i+1];
                 uint16_t pool_numCols = array[i+2];
                 stride_numRows = array[i+3];
@@ -151,14 +151,14 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 4 - Conv2D Flatten */
-            else if (array[i] == 4){
+            else if (array[i] == FLATTEN_LAYER){
                 i += 1;
                 output->numRows = input->numRows * input->numCols * numFilters;
-                output->numCols = 2;
+                output->numCols = LEA_RESERVED;
                 flatten(output, input, numFilters);
             }
             /* SKIP FOR INFERENCE TIME IMPLEMENTATION - layer class 5 - Dropout Layer */
-            else if (array[i] == 5){
+            else if (array[i] == DROPOUT_LAYER){
                 i += 1;
             }
 

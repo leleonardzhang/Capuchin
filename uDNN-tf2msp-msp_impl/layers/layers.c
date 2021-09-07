@@ -1,10 +1,10 @@
 #include "layers.h"
 
 #pragma PERSISTENT(PADDING_BUFFER)
-static dtype PADDING_BUFFER[4096] = {0};
+static dtype PADDING_BUFFER[PADDING_BUFFER_LENGTH] = {0};
 
 #pragma PERSISTENT(FILTER_BUFFER)
-static dtype FILTER_BUFFER[1024] = {0};
+static dtype FILTER_BUFFER[FILTER_BUFFER_LENGTH] = {0};
 
 
 matrix *dense(matrix *result, matrix *input, matrix *W, matrix *b, int16_t (*activation)(int16_t, uint16_t), uint16_t precision) {
@@ -148,7 +148,7 @@ matrix *filter_simple(matrix *result, matrix *input, matrix *filter, uint16_t pr
         for (j = 0; j <= input_numCols - filter_numCols; j += stride_numCols){
             // (i,j) is the coordinate of the top-left element of the moving filter
             sum = 0;
-            for (m = i; m < i + filter_numRows; m ++ ){
+            for (m = i; m < i + filter_numRows; m ++){
                 for (n = j; n < j + filter_numCols; n ++){  // calculate element-wise matrix product between the filter and corresponding section in the input image
                     input_offset = m * input_numRows + n;
                     filter_offset = (m - i) * filter_numCols + (n - j);

@@ -129,74 +129,53 @@ def encode(model) -> list:
     return encode_list
 
 
-def encode_separate(model) -> list:
-    encode_list = []
-    if encode_model(model) == -1:
-        return encode_list
-    if encode_model(model) == 0:
-        numLayer = 0
-        for layer in model.layers:
-            if encode_layer(layer) == -1:
-                return encode_list
-            if encode_layer(layer) == 0:
-                encode_list.append(encode_layer(layer))
-                encode_list = encode_list + encode_dense_data(layer)
-            elif encode_layer(layer) == 1:
-                encode_list.append(encode_layer(layer))
-            elif encode_layer(layer) == 2:
-                encode_list.append(encode_layer(layer))
-                encode_list = encode_list + encode_conv2d_data(layer)
-            elif encode_layer(layer) == 3:
-                encode_list.append(encode_layer(layer))
-                encode_list = encode_list + encode_maxpooling2d_data(layer)
-            elif encode_layer(layer) == 4:
-                encode_list.append(encode_layer(layer))
-            elif encode_layer(layer) == 5:
-                encode_list.append(encode_layer(layer))
-
-            count = 0
-            output_str = ""
-            encode_list_len = len(encode_list)
-            for element in encode_list:
-                output_str = output_str + f"{element},"
-                count += 1
-            output_str = "#pragma PERSISTENT(layer_" + f"{numLayer}" + ")\nstatic int16_t layer_" + f"{numLayer}[{encode_list_len}]=" + " { " + f"{output_str[:-1]}" + " };\n"
-            encode_list = []
-            numLayer += 1
-
-            f = open("separate.h", "a")
-            f.write(output_str)
-            f.close()
-    return
-
-
 def export_model(model):
     count = 0
     output_str = ""
     for element in encode(model):
         output_str = output_str + f"{element},"
         count += 1
-    output_str = \
-"""#include "../math/matrix.h"
-#include "neural_network_parameters.h"
-#include "math/matrix_ops.h"
-#include "math/fixed_point_ops.h"
+    left_bracket = '{'
+    right_bracket = '}'
+    output_str = f"""#include <stdint.h>
 #include "math/matrix.h"
-#include "utils/utils.h"
-#include "layers/layers.h"
 
-#ifndef DECODER_GUARD
-#define DECODER_GUARD
+#ifndef NEURAL_NETWORK_PARAMS_GUARD
+#define NEURAL_NETWORK_PARAMS_GUARD
 
-matrix *apply_model(matrix *output, matrix *input);
+#define FIXED_POINT_PRECISION 10
+#define NUM_OUTPUTS 1
+#define IS_MSP
+#define LEA_RAM_LENGTH 1800
+#define LEA_RESERVED 2
+
+#define MODEL_ARRAY_LENGTH {len(encode(model))}
+#define MODEL_ARRAY_OUTPUT_LENGTH 16384
+#define MODEL_ARRAY_TEMP_LENGTH 16384
+#define PADDING_BUFFER_LENGTH 4096
+#define FILTER_BUFFER_LENGTH 1024
+#define INPUT_NUM_ROWS {model.layers[0].input_shape[1]}
+#define INPUT_NUM_COLS {model.layers[0].input_shape[2]}
+#define INPUT_NUM_CHANNELS {model.layers[0].input_shape[3]}
+#define OUTPUT_NUM_LABELS {model.layers[-1].get_weights()[0].shape[1]}
+
+#define INPUT_LENGTH (INPUT_NUM_ROWS*INPUT_NUM_COLS*INPUT_NUM_CHANNELS)
+#define OUTPUT_LENGTH (OUTPUT_NUM_LABELS*LEA_RESERVED)
 
 #pragma PERSISTENT(MODEL_ARRAY)
-static dtype MODEL_ARRAY[""" + f"{count}" + "] ="  + "{" + f"{output_str[:-1]}" + "};" + """
+static dtype MODEL_ARRAY[MODEL_ARRAY_LENGTH] = {left_bracket} {output_str[:-1]} {right_bracket};
 
-static uint16_t MODEL_ARRAY_LENGTH = """ + f"{count}" + """;
+/* INPUT HERE */
+#pragma PERSISTENT(input_buffer)
+static dtype input_buffer[INPUT_LENGTH] = {left_bracket} {right_bracket};
+#pragma PERSISTENT(output_buffer)
+static dtype output_buffer[OUTPUT_LENGTH] = {left_bracket}0{right_bracket};
+static dtype label;
+static matrix inputFeatures, outputLabels;
+
 #endif
 """
 
-    f = open("decoder.h", "w")
+    f = open("neural_network_parameters.h", "w")
     f.write(output_str)
     f.close()

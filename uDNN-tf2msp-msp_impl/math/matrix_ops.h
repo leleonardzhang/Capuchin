@@ -16,7 +16,6 @@
 #define VECTOR_COLUMN(X)    ((X) * VECTOR_COLS)
 
 
-
 //// For MSP implementations, we allocate memory in the LEA RAM.
 //// This memory is used when executing matrix multiplications.
 //DSPLIB_DATA(MULTIPLY_BUFFER, 4);
