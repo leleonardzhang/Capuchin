@@ -39,7 +39,7 @@ matrix *maxpooling(matrix* result, matrix *input, uint16_t pool_numRows, uint16_
             x = i * pool_numRows;
             y = j * pool_numCols;
 
-            max = 0;
+            max = -32768;
             for (kx = 0; kx < pool_numRows; kx ++){
                 for (ky = 0; ky < pool_numCols; ky ++){
                     // traverse the entire sub-block that are related to this pooling
