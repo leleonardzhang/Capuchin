@@ -23,7 +23,7 @@ Disclaim: the following dependencies are only author's recommended setup. This p
 2. Import encoder package into your Python uDNN implementation program.
 
     `import encoder`
-3. Call `encoder.export_model(MODEL_OBJECT)` in your program where `MODEL_OBJECT` should be a trained `tensorflow.keras.Model` object.
+3. Call `encoder.export_model(MODEL_OBJECT)` in your program where the argument`MODEL_OBJECT` should be a trained `tensorflow.keras.Model` object.
 4. Now a header file named `neural_network_parameters.h` should be written in the same directory.
 #### Using C Implementation
 1. Copy the header file `neural_network_parameters.h` into directory `uDNN-tf2msp/uDNN-tf2msp-msp_impl`.
