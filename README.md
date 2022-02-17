@@ -1,4 +1,4 @@
-# uDNN-tf2msp
+# Capuchin
 ## About This
 This repository stores an automation tool designed to implement the inference of Python Tensorflow uDNN (micro deep neural network) models on TI MSP430FR5994 microcontrollers.
 
@@ -14,7 +14,7 @@ Disclaim: the following dependencies are only author's recommended setup. This p
 + numpy=1.19.5
 + TI Code Composer Studio (recommended to debug as this project only simulates input and output rather than connecting to actual sensors)
 ### Installation
-`git clone https://github.com/leleonardzhang/uDNN-tf2msp.git`
+`git clone https://github.com/leleonardzhang/Capuchin.git`
 ### Executing the Program
 #### Using Python Interface
 1. Copy `encoder.py` into the same directory of your Python uDNN implementation program.
@@ -62,7 +62,7 @@ Due to the hardware constraints of MSP430, the C implementation should meet the 
 ## Contact
 Le Zhang - Email: lezhang at unc.edu
 
-Project Link: https://github.com/leleonardzhang/uDNN-tf2msp
+Project Link: https://github.com/leleonardzhang/Capuchin
 
 ## Credits
 This project is built on the framework of <a href="https://github.com/tejaskannan/budget-rnn">budget-RNN</a>.
