@@ -1,4 +1,4 @@
-# Capuchin
+# Capuchin: A Neural Network Model Generator for 16-bit Microcontrollers
 ## About This
 This repository stores Capuchin, a Neural Network model generator for implementing pre-trained models on TI MSP430FR5994 microcontrollers.
 
