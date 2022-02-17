@@ -57,8 +57,8 @@ Due to the hardware constraints of MSP430, the C implementation should meet the 
 + `LEA_RAM_SIZE <= 1.8K` (LEA SRAM volatile memory constraint)
 + `LENGTH_OF_ANY_LAYER_OUTPUT <= 16384` (FRAM persistent memory constraint)
 ## Examples
-[MNIST](examples/MNIST_uDNN.ipynb)
-[CIFAR-10](examples/CIFAR_10_uDNN.ipynb)
+[MNIST](examples/MNIST_uDNN_Capuchin.ipynb.ipynb)
+[CIFAR-10](examples/CIFAR_10_uDNN_Capuchin.ipynb)
 ## Contact
 Le Zhang - Email: lezhang at unc.edu
 
