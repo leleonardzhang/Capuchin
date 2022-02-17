@@ -1,8 +1,8 @@
 # Capuchin
 ## About This
-This repository stores an automation tool designed to implement the inference of Python Tensorflow uDNN (micro deep neural network) models on TI MSP430FR5994 microcontrollers.
+This repository stores Capuchin, a Neural Network model generator for implementing pre-trained models on TI MSP430FR5994 microcontrollers.
 
-This project is made into two parts: a Python interface `encoder.py` and the microcontroller C implementation `uDNN-tf2msp-msp_impl`. The Python interface is built with a function that takes `tensorflow.keras.Model` objects as the argument to extract uDNN model configuration and generates a compiled header file `neural_network_parameters.h` that can be used to compile along with the microcontroller C implementation. The microcontroller C implementation extracts the model configuration array in the header file `neural_network_parameters.h`, builds a uDNN model on MSP430FR5994 by calling a sequence of uDNN layer implemetations, and feeds the sample dataset input into the uDNN model to compute the inference output.
+This project is made into two parts: a Python interface `encoder.py` and the microcontroller C implementation `capuchin-MCU`. The Python interface is built with a function that takes `tensorflow.keras.Model` objects as the argument to extract uDNN model configuration and generates a compiled header file `neural_network_parameters.h` that can be used to compile along with the microcontroller C implementation. The microcontroller C implementation extracts the model configuration array in the header file `neural_network_parameters.h`, builds a uDNN model on MSP430FR5994 by calling a sequence of uDNN layer implemetations, and feeds the sample dataset input into the uDNN model to compute the inference output.
 
 ## Getting Started
 ### Dependencies
@@ -19,18 +19,18 @@ Disclaim: the following dependencies are only author's recommended setup. This p
 #### Using Python Interface
 1. Copy `encoder.py` into the same directory of your Python uDNN implementation program.
 
-    `cp uDNN-tf2msp/encoder.py {UDNN_PYTHON_IMPL_DIR}`
+    `cp Capuchin/encoder.py {UDNN_PYTHON_IMPL_DIR}`
 2. Import encoder package into your Python uDNN implementation program.
 
     `import encoder`
 3. Call `encoder.export_model(MODEL_OBJECT)` in your program where the argument`MODEL_OBJECT` should be a trained `tensorflow.keras.Model` object.
 4. Now a header file named `neural_network_parameters.h` should be written in the same directory.
 #### Using C Implementation
-1. Copy the header file `neural_network_parameters.h` into directory `uDNN-tf2msp/uDNN-tf2msp-msp_impl`.
+1. Copy the header file `neural_network_parameters.h` into directory `Capuchin/capuchin-MCU`.
 
-    `cp {UDNN_PYTHON_IMPL_DIR}/neural_network_parameters.h {TF2MSP_PROJECT_DIR}/uDNN-tf2msp/uDNN-tf2msp-msp_impl`
-2. Open `{TF2MSP_PROJECT_DIR}/uDNN-tf2msp/uDNN-tf2msp-msp_impl` as a TI CCS project.
-3. Copy desired input into `input_buffer` array in `uDNN-tf2msp/uDNN-tf2msp-msp_impl/neural_network_parameters.h`.
+    `cp {UDNN_PYTHON_IMPL_DIR}/neural_network_parameters.h {TF2MSP_PROJECT_DIR}/uDNN-tf2msp/Capuchin/capuchin-MCU`
+2. Open `{TF2MSP_PROJECT_DIR}/Capuchin/capuchin-MCU` as a TI CCS project.
+3. Copy desired input into `input_buffer` array in `/neural_network_parameters.h`.
 4. Compile and Run the inference on MSP430.
 
 ## Supports
