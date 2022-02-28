@@ -28,8 +28,8 @@ Disclaim: the following dependencies are only author's recommended setup. This p
 #### Using C Implementation
 1. Copy the header file `neural_network_parameters.h` into directory `Capuchin/capuchin-MCU`.
 
-    `cp {UDNN_PYTHON_IMPL_DIR}/neural_network_parameters.h {TF2MSP_PROJECT_DIR}/Capuchin/capuchin-MCU`
-2. Open `{TF2MSP_PROJECT_DIR}/Capuchin/capuchin-MCU` as a TI CCS project.
+    `cp {UDNN_PYTHON_IMPL_DIR}/neural_network_parameters.h {CAPUCHIN_PROJECT_DIR}/Capuchin/capuchin-MCU`
+2. Open `{CAPUCHIN_PROJECT_DIR}/Capuchin/capuchin-MCU` as a TI CCS project.
 3. Copy desired input into `input_buffer` array in `/neural_network_parameters.h`.
 4. Compile and Run the inference on MSP430.
 
