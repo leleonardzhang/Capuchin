@@ -8,6 +8,15 @@
 #ifdef IS_MSP
 #include <msp430.h>
 #include "DSPLib.h"
+
+#define DMA_CHANNEL_0                                                    (0x00)
+#define DMA_CHANNEL_1                                                    (0x10)
+#define DMA_CHANNEL_2                                                    (0x20)
+#define DMA_CHANNEL_3                                                    (0x30)
+#define DMA_CHANNEL_4                                                    (0x40)
+#define DMA_CHANNEL_5                                                    (0x50)
+#define DMA_CHANNEL_6                                                    (0x60)
+#define DMA_CHANNEL_7                                                    (0x70)
 #endif
 
 #ifndef MATRIX_OPS_GUARD

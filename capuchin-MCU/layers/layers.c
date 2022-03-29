@@ -125,10 +125,9 @@ matrix *padding_same(matrix *result, matrix *input, matrix *filter, uint16_t str
     for (i = 0; i < input_numRows; i ++) {
         input_offset = i * input_numCols;
         padding_offset = ((pad_along_numRows >> 1) + i) * result->numCols + (pad_along_numCols >> 1);
-        memcpy(PADDING_BUFFER + padding_offset, input->data + input_offset, sizeof(dtype) * input_numCols);
+        dma_load(PADDING_BUFFER + padding_offset, input->data + input_offset, input_numCols);
     }
 
-//    memcpy(result->data = PADDING_BUFFER, result->numRows * result->numCols * sizeof(dtype));
     result->data = PADDING_BUFFER;
     return result;
 }

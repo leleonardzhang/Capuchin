@@ -1,6 +1,6 @@
 /******************************************************************************
 *
-* Copyright (C) 2012 - 2020 Texas Instruments Incorporated - http://www.ti.com/
+* Copyright (C) 2012 - 2021 Texas Instruments Incorporated - http://www.ti.com/
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
@@ -47,7 +47,7 @@
 /* -heap   0x0100                                   HEAP AREA SIZE            */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
-/* 1.210 */
+/* 1.213 */
 /*----------------------------------------------------------------------------*/
 
 /****************************************************************************/
@@ -150,7 +150,7 @@ SECTIONS
         GROUP(READ_WRITE_MEMORY)
         {
 
-//            .TI.persistent : {}              /* For #pragma persistent            */
+            .TI.persistent : {}              /* For #pragma persistent            */
             .cio           : {}              /* C I/O Buffer                      */
             .sysmem        : {}              /* Dynamic memory allocation area    */
         } PALIGN(0x0400), RUN_START(fram_rw_start)
@@ -165,10 +165,6 @@ SECTIONS
         } PALIGN(0x0400), RUN_START(fram_ipe_start) RUN_END(fram_ipe_end) RUN_END(fram_rx_start)
 
     } > 0x4000
-
-
-    .TI.persistent    : {} >> FRAM2
-	.TI.noinit        : {} >> FRAM2
 
     .cinit            : {}  > FRAM          /* Initialization tables             */
     .binit            : {}  > FRAM          /* Boot-time Initialization tables   */
@@ -187,7 +183,7 @@ SECTIONS
 #ifndef __LARGE_CODE_MODEL__
     .text             : {} > FRAM           /* Code                              */
 #else
-    .text             : {} >> FRAM  /* Code                              */
+    .text             : {} >> FRAM2 | FRAM  /* Code                              */
 #endif
 
     #ifdef __TI_COMPILER_VERSION__

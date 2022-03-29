@@ -27,7 +27,7 @@ matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t preci
     uint16_t input_numCols = input->numCols;
     uint16_t filter_numRows = filter->numRows;
     uint16_t filter_numCols = filter->numCols;
-    uint16_t i, j, m, n, input_temp;
+    uint16_t i, j, m, input_temp;
 
     uint16_t filter_offset;
     uint16_t filter_length = filter_numRows * filter_numCols;
@@ -46,7 +46,7 @@ matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t preci
     dtype *srcA = MULTIPLY_BUFFER;
     dtype *srcB = MULTIPLY_BUFFER + filter_offset;
     memset(srcB, 0, sizeof(dtype) * filter_offset);             // set memory to zero to prevent the error of the last element added in order to meet the requirement of multiple of 2
-    memcpy(srcB, filter->data, sizeof(dtype) * filter_offset);  // only copy kernel one time for a single channel
+    dma_load(srcB, filter->data, filter_offset);  // only copy kernel one time for a single channel
     _iq31 *result_iq31 = srcB + filter_offset;                  // msp_mac_q15() returns 32-bit result
     _q15 *result_q15 = result_iq31 + sizeof(result_iq31) * 2;   // msp_iq31_to_q15() returns 16-bit result
 
@@ -69,11 +69,9 @@ matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t preci
             /* (i,j) is the coordinate of the top-left element of the area in the input that will be applied with filter */
             dtype *srcA_temp = srcA;
             for (m = i; m < i + filter_numRows; m ++ ) {
-                for (n = j; n < j + filter_numCols; n ++) {
-                    /* copy the entire area into srcA inside of LEA RAM */
-                    input_temp = m * input_numCols + n;
-                    *(srcA_temp++) = input->data[input_temp];
-                }
+                input_temp = m * input_numCols + j;
+                dma_load(srcA_temp, &(input->data[input_temp]), filter_numCols);
+                srcA_temp += filter_numCols;
             }
 
             /* apply element-wise multiplication and sum LEA API */
@@ -98,18 +96,16 @@ matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t preci
 
 dtype *dma_load(dtype *result, dtype *data, uint16_t n) {
     /*
-     * Need change if read/write 20-bits addresses (FRAM2)
-     * Loads the first n elements of the data array into the result array using
-     * DMA.
+     * Transfer data in n bytes block to result using DMA
+     * This is the correct version for 20-bit address
      */
     // Configure DMA channel 0
-    __data20_write_long((uintptr_t) &DMA0SA, (uintptr_t) data);   // Source block address
-    __data20_write_long((uintptr_t) &DMA0DA, (uintptr_t) result); // Destination single address
+    __data16_write_addr((unsigned short)(__MSP430_BASEADDRESS_DMA__ + DMA_CHANNEL_0 + OFS_DMA0SA), data);
+    __data16_write_addr((unsigned short)(__MSP430_BASEADDRESS_DMA__ + DMA_CHANNEL_0 + OFS_DMA0DA), result);
     DMA0SZ = n;                                      // Block size
     DMA0CTL = DMADT_5 | DMASRCINCR_3 | DMADSTINCR_3; // Rpt, inc
     DMA0CTL |= DMAEN;                                // Enable DMA0
     DMA0CTL |= DMAREQ;
-
     return result;
 }
 #endif
@@ -177,7 +173,7 @@ matrix *matrix_multiply(matrix *result, matrix *mat1, matrix *mat2, uint16_t pre
 
     #ifdef IS_MSP
 
-    if (n * m + m * p + n * p > 1800){
+    if (n * m + m * p + n * p > LEA_RAM_LENGTH){
         /*
          * LEA RAM has the limit of 1800 for 16-bit data
          */
@@ -204,10 +200,10 @@ matrix *matrix_multiply(matrix *result, matrix *mat1, matrix *mat2, uint16_t pre
     }
     else {
         uint16_t offset = 0;
-        dtype *mat1Data = memcpy(MULTIPLY_BUFFER, mat1->data, n * m * sizeof(dtype));
+        dtype *mat1Data = dma_load(MULTIPLY_BUFFER, mat1->data, n * m);
         offset += n * m;
 
-        dtype *mat2Data = memcpy(MULTIPLY_BUFFER + offset, mat2->data, m * p * sizeof(dtype));
+        dtype *mat2Data = dma_load(MULTIPLY_BUFFER + offset, mat2->data, m * p);
         offset += m * p;
 
         dtype *resultData = MULTIPLY_BUFFER + offset;  // Temporary buffer (in LEA RAM) for the result
@@ -240,7 +236,7 @@ matrix *matrix_multiply(matrix *result, matrix *mat1, matrix *mat2, uint16_t pre
         }
 
         // Load result back into the given result matrix
-        memcpy(result->data, resultData, n * p * sizeof(dtype));
+        dma_load(result->data, resultData, n * p);
     }
 
     #else
