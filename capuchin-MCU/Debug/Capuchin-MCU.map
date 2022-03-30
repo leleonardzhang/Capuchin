@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v21.6.0                     
 ******************************************************************************
->> Linked Tue Mar 29 15:07:57 2022
+>> Linked Tue Mar 29 22:21:48 2022
 
 OUTPUT FILE NAME:   <Capuchin-MCU.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000e000
@@ -20,7 +20,7 @@ MEMORY CONFIGURATION
   RAM                   00001c00   00001000  000000b6  00000f4a  RWIX
   LEARAM                00002c00   00000ec8  00000ec8  00000000  RWIX
   LEASTACK              00003ac8   00000138  00000000  00000138  RWIX
-  FRAM                  00004000   0000bf80  0000a108  00001e78  RWIX
+  FRAM                  00004000   0000bf80  0000a088  00001ef8  RWIX
   JTAGSIGNATURE         0000ff80   00000004  00000004  00000000  RWIX  ffff 
   BSLSIGNATURE          0000ff84   00000004  00000004  00000000  RWIX  ffff 
   IPESIGNATURE          0000ff88   00000008  00000008  00000000  RWIX  ffff 
@@ -80,7 +80,7 @@ MEMORY CONFIGURATION
   INT53                 0000fffa   00000002  00000002  00000000  RWIX
   INT54                 0000fffc   00000002  00000002  00000000  RWIX
   RESET                 0000fffe   00000002  00000002  00000000  RWIX
-  FRAM2                 00010000   00033ff8  00022a14  000115e4  RWIX
+  FRAM2                 00010000   00033ff8  0002256e  00011a8a  RWIX
 
 
 SECTION ALLOCATION MAP
@@ -114,11 +114,11 @@ section   page    origin      length       input sections
 .ipe:_isr 
 *          0    0000e000    00000000     UNINITIALIZED
 
-.cinit     0    0000e0e8    00000020     
-                  0000e0e8    00000006     (.cinit..bss.load) [load image, compression = zero_init]
-                  0000e0ee    00000006     (.cinit..leaRAM.load) [load image, compression = zero_init]
-                  0000e0f4    00000004     (__TI_handler_table)
-                  0000e0f8    00000010     (__TI_cinit_table)
+.cinit     0    0000e068    00000020     
+                  0000e068    00000006     (.cinit..bss.load) [load image, compression = zero_init]
+                  0000e06e    00000006     (.cinit..leaRAM.load) [load image, compression = zero_init]
+                  0000e074    00000004     (__TI_handler_table)
+                  0000e078    00000010     (__TI_cinit_table)
 
 .init_array 
 *          0    00004000    00000000     UNINITIALIZED
@@ -282,69 +282,65 @@ SYSNMI     0    0000fffc    00000002
 *          0    00010000    00020bde     
                   00010000    00020bde     decoder.obj (.TI.bound:MODEL_ARRAY)
 
-.const     0    0000e040    000000a8     
-                  0000e040    00000080     msp_shift_iq31.obj (.const:msp_shift_right_factor_iq31)
-                  0000e0c0    00000020     msp_shift_q15.obj (.const:msp_shift_right_factor_q15)
-                  0000e0e0    00000004     layers.obj (.const)
-                  0000e0e4    00000004     matrix_ops.obj (.const)
+.const     0    0000e040    00000028     
+                  0000e040    00000020     msp_shift_q15.obj (.const:msp_shift_right_factor_q15)
+                  0000e060    00000004     layers.obj (.const)
+                  0000e064    00000004     matrix_ops.obj (.const)
 
-.text      0    00030bde    00001e36     
-                  00030bde    000003fe     decoder.obj (.text:apply_model)
-                  00030fdc    00000294     matrix_ops.obj (.text:filter_LEA)
-                  00031270    00000264     matrix_ops.obj (.text:matrix_multiply)
-                  000314d4    00000202     msp_shift_iq31.obj (.text:msp_shift_iq31)
-                  000316d6    000001f4     msp_shift_q15.obj (.text:msp_shift_q15)
-                  000318ca    000001d8     msp_matrix_mpy_q15.obj (.text:msp_matrix_mpy_q15)
-                  00031aa2    00000194     msp_mac_q15.obj (.text:msp_mac_q15)
-                  00031c36    00000186     msp_deinterleave_q15.obj (.text:msp_deinterleave_q15)
-                  00031dbc    0000015c     layers.obj (.text:filters_sum)
-                  00031f18    0000013e     msp_copy_iq31.obj (.text:msp_copy_iq31)
-                  00032056    0000013e     msp_copy_q15.obj (.text:msp_copy_q15)
-                  00032194    000000da     layers.obj (.text:conv2d)
-                  0003226e    000000d6     layers.obj (.text:padding_same)
-                  00032344    000000c6     layers.obj (.text:maxpooling)
-                  0003240a    000000ba     matrix_ops.obj (.text:matrix_add)
-                  000324c4    00000080     layers.obj (.text:maxpooling_filters)
-                  00032544    00000078     rts430x_lc_ld_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
-                  000325bc    0000006e     init.obj (.text:init_gpio)
-                  0003262a    0000006c     layers.obj (.text:flatten)
-                  00032696    0000005e     matrix_ops.obj (.text:apply_elementwise)
-                  000326f4    00000050     main.obj (.text:main)
-                  00032744    0000004e     msp_lea_init.obj (.text:msp_lea_init)
-                  00032792    00000046     matrix_ops.obj (.text:argmax)
-                  000327d8    0000003e     rts430x_lc_ld_eabi.lib : asr32.asm.obj (.text:l_asr_const)
-                  00032816    0000003a     init.obj (.text:init_clock_system)
-                  00032850    00000036     layers.obj (.text:dense)
-                  00032886    00000032     msp_matrix_shift_q15.obj (.text:msp_matrix_shift_q15)
-                  000328b8    00000028     fixed_point_ops.obj (.text:fp_leaky_relu)
-                  000328e0    00000026     matrix_ops.obj (.text:dma_load)
-                  00032906    00000024     rts430x_lc_ld_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
-                  0003292a    00000020                            : memset.c.obj (.text:memset)
-                  0003294a    0000001e     msp_iq31_to_q15.obj (.text:msp_iq31_to_q15)
-                  00032968    0000001c     rts430x_lc_ld_eabi.lib : mult1632_f5hw.asm.obj (.text:__mpysl)
-                  00032984    00000018                            : mult16_f5hw.asm.obj (.text)
-                  0003299c    00000016                            : div16u.asm.obj (.text)
-                  000329b2    00000012     fixed_point_ops.obj (.text:fp_mul)
-                  000329c4    00000010     rts430x_lc_ld_eabi.lib : asr32.asm.obj (.text:l_asr)
-                  000329d4    00000010                            : lsl32.asm.obj (.text:l_lsl)
-                  000329e4    0000000c     layers.obj (.text:apply_leakyrelu)
-                  000329f0    0000000a     rts430x_lc_ld_eabi.lib : lsl16.asm.obj (.text)
-                  000329fa    00000008     fixed_point_ops.obj (.text:fp_relu)
-                  00032a02    00000006     rts430x_lc_ld_eabi.lib : exit.c.obj (.text:abort)
-                  00032a08    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  00032a0c    00000004     fixed_point_ops.obj (.text:fp_add)
-                  00032a10    00000002     rts430x_lc_ld_eabi.lib : startup.c.obj (.text:_system_post_cinit)
-                  00032a12    00000002     fixed_point_ops.obj (.text:fp_linear)
+.text      0    00030bde    00001990     
+                  00030bde    00000406     decoder.obj (.text:apply_model)
+                  00030fe4    000001f4     msp_shift_q15.obj (.text:msp_shift_q15)
+                  000311d8    000001d8     msp_matrix_mpy_q15.obj (.text:msp_matrix_mpy_q15)
+                  000313b0    000001ca     matrix_ops.obj (.text:filter_im2col)
+                  0003157a    000001bc     matrix_ops.obj (.text:matrix_multiply_reduce)
+                  00031736    000001b0     matrix_ops.obj (.text:matrix_multiply)
+                  000318e6    00000174     layers.obj (.text:filters_sum)
+                  00031a5a    0000013e     msp_copy_q15.obj (.text:msp_copy_q15)
+                  00031b98    0000011e     layers.obj (.text:conv2d)
+                  00031cb6    000000d6     layers.obj (.text:padding_same)
+                  00031d8c    000000d4     matrix_ops.obj (.text:matrix_multiply_vanilla)
+                  00031e60    000000c6     layers.obj (.text:maxpooling)
+                  00031f26    000000ba     matrix_ops.obj (.text:matrix_add)
+                  00031fe0    00000080     layers.obj (.text:maxpooling_filters)
+                  00032060    00000078     rts430x_lc_ld_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
+                  000320d8    0000006e     init.obj (.text:init_gpio)
+                  00032146    0000006c     layers.obj (.text:flatten)
+                  000321b2    00000060     matrix_ops.obj (.text:msp_checkStatus)
+                  00032212    0000005e     matrix_ops.obj (.text:apply_elementwise)
+                  00032270    00000058     main.obj (.text:main)
+                  000322c8    0000004e     msp_lea_init.obj (.text:msp_lea_init)
+                  00032316    00000046     matrix_ops.obj (.text:argmax)
+                  0003235c    0000003e     rts430x_lc_ld_eabi.lib : asr32.asm.obj (.text:l_asr_const)
+                  0003239a    0000003a     layers.obj (.text:dense)
+                  000323d4    0000003a     init.obj (.text:init_clock_system)
+                  0003240e    00000032     msp_matrix_shift_q15.obj (.text:msp_matrix_shift_q15)
+                  00032440    00000028     fixed_point_ops.obj (.text:fp_leaky_relu)
+                  00032468    00000026     matrix_ops.obj (.text:dma_load)
+                  0003248e    00000024     rts430x_lc_ld_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init)
+                  000324b2    00000020                            : memset.c.obj (.text:memset)
+                  000324d2    0000001c                            : mult1632_f5hw.asm.obj (.text:__mpysl)
+                  000324ee    00000018                            : mult16_f5hw.asm.obj (.text)
+                  00032506    00000016                            : div16u.asm.obj (.text)
+                  0003251c    00000012     fixed_point_ops.obj (.text:fp_mul)
+                  0003252e    00000010     rts430x_lc_ld_eabi.lib : asr32.asm.obj (.text:l_asr)
+                  0003253e    0000000c     layers.obj (.text:apply_leakyrelu)
+                  0003254a    0000000a     rts430x_lc_ld_eabi.lib : lsl16.asm.obj (.text)
+                  00032554    00000008     fixed_point_ops.obj (.text:fp_relu)
+                  0003255c    00000006     rts430x_lc_ld_eabi.lib : exit.c.obj (.text:abort)
+                  00032562    00000004                            : pre_init.c.obj (.text:_system_pre_init)
+                  00032566    00000004     fixed_point_ops.obj (.text:fp_add)
+                  0003256a    00000002     rts430x_lc_ld_eabi.lib : startup.c.obj (.text:_system_post_cinit)
+                  0003256c    00000002     fixed_point_ops.obj (.text:fp_linear)
 
 MODULE SUMMARY
 
        Module                     code   ro data   rw data
        ------                     ----   -------   -------
     .\
-       main.obj                   80     0         2206   
+       main.obj                   88     0         2206   
        init.obj                   168    0         0      
     +--+--------------------------+------+---------+---------+
-       Total:                     248    0         2206   
+       Total:                     256    0         2206   
                                                           
     .\DSPLib\source\lea\
        msp_lea_init.obj           78     0         0      
@@ -360,35 +356,30 @@ MODULE SUMMARY
        Total:                     522    0         0      
                                                           
     .\DSPLib\source\utility\
-       msp_deinterleave_q15.obj   390    0         0      
-       msp_copy_iq31.obj          318    0         0      
        msp_copy_q15.obj           318    0         0      
-       msp_iq31_to_q15.obj        30     0         0      
     +--+--------------------------+------+---------+---------+
-       Total:                     1056   0         0      
+       Total:                     318    0         0      
                                                           
     .\DSPLib\source\vector\
-       msp_shift_iq31.obj         514    128       0      
        msp_shift_q15.obj          500    32        0      
-       msp_mac_q15.obj            404    0         0      
     +--+--------------------------+------+---------+---------+
-       Total:                     1418   160       0      
+       Total:                     500    32        0      
                                                           
     .\decoder\
-       decoder.obj                1022   0         166622 
+       decoder.obj                1030   0         166622 
     +--+--------------------------+------+---------+---------+
-       Total:                     1022   0         166622 
+       Total:                     1030   0         166622 
                                                           
     .\layers\
-       layers.obj                 1280   4         6144   
+       layers.obj                 1376   4         6144   
     +--+--------------------------+------+---------+---------+
-       Total:                     1280   4         6144   
+       Total:                     1376   4         6144   
                                                           
     .\math\
-       matrix_ops.obj             1660   4         3784   
+       matrix_ops.obj             2030   4         3784   
        fixed_point_ops.obj        72     0         0      
     +--+--------------------------+------+---------+---------+
-       Total:                     1732   4         3784   
+       Total:                     2102   4         3784   
                                                           
     C:\ti\ccs1110\ccs\tools\compiler\ti-cgt-msp430_21.6.0.LTS\lib\rts430x_lc_ld_eabi.lib
        autoinit.c.obj             120    0         0      
@@ -399,7 +390,6 @@ MODULE SUMMARY
        mult1632_f5hw.asm.obj      28     0         0      
        mult16_f5hw.asm.obj        24     0         0      
        div16u.asm.obj             22     0         0      
-       lsl32.asm.obj              16     0         0      
        lsl16.asm.obj              10     0         0      
        isr_trap.asm.obj           8      0         0      
        exit.c.obj                 6      0         0      
@@ -442,24 +432,24 @@ MODULE SUMMARY
        int54.asm.obj              0      2         0      
        startup.c.obj              2      0         0      
     +--+--------------------------+------+---------+---------+
-       Total:                     414    74        0      
+       Total:                     398    74        0      
                                                           
        Stack:                     0      0         160    
        Linker Generated:          0      32        0      
     +--+--------------------------+------+---------+---------+
-       Grand Total:               7798   276       178920 
+       Grand Total:               6608   148       178920 
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 0000e0f8 records: 2, size/record: 8, table size: 16
-	.bss: load addr=0000e0e8, load size=00000006 bytes, run addr=00001c00, run size=00000016 bytes, compression=zero_init
-	.leaRAM: load addr=0000e0ee, load size=00000006 bytes, run addr=00002c00, run size=00000ec8 bytes, compression=zero_init
+__TI_cinit_table @ 0000e078 records: 2, size/record: 8, table size: 16
+	.bss: load addr=0000e068, load size=00000006 bytes, run addr=00001c00, run size=00000016 bytes, compression=zero_init
+	.leaRAM: load addr=0000e06e, load size=00000006 bytes, run addr=00002c00, run size=00000ec8 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 0000e0f4 records: 1, size/record: 4, table size: 4
+__TI_handler_table @ 0000e074 records: 1, size/record: 4, table size: 4
 	index: 0, handler: __TI_zero_init
 
 
@@ -728,7 +718,7 @@ address   name
 000004bc  BIN2BCD                                
 000004bd  BIN2BCD_H                              
 000004bc  BIN2BCD_L                              
-00032a02  C$$EXIT                                
+0003255c  C$$EXIT                                
 0000043e  CAPTIO0CTL                             
 0000043f  CAPTIO0CTL_H                           
 0000043e  CAPTIO0CTL_L                           
@@ -2012,13 +2002,13 @@ address   name
 0000015c  WDTCTL_L                               
 00002c00  __STACK_END                            
 000000a0  __STACK_SIZE                           
-0000e0f8  __TI_CINIT_Base                        
-0000e108  __TI_CINIT_Limit                       
-0000e108  __TI_CINIT_Warm                        
-0000e0f4  __TI_Handler_Table_Base                
-0000e0f8  __TI_Handler_Table_Limit               
+0000e078  __TI_CINIT_Base                        
+0000e088  __TI_CINIT_Limit                       
+0000e088  __TI_CINIT_Warm                        
+0000e074  __TI_Handler_Table_Base                
+0000e078  __TI_Handler_Table_Limit               
 0000e038  __TI_ISR_TRAP                          
-00032544  __TI_auto_init_nobinit_nopinit_hold_wdt
+00032060  __TI_auto_init_nobinit_nopinit_hold_wdt
 0000ffb4  __TI_int18                             
 0000ffb6  __TI_int19                             
 0000ffb8  __TI_int20                             
@@ -2059,79 +2049,74 @@ address   name
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
-00032906  __TI_zero_init                         
+0003248e  __TI_zero_init                         
 ffffffff  __c_args__                             
-0003299c  __mspabi_divu                          
-00032984  __mspabi_mpyi_f5hw                     
-00032968  __mspabi_mpysl_f5hw                    
-0003299c  __mspabi_remu                          
-000329f0  __mspabi_slli                          
-000329d4  __mspabi_slll                          
-000329c4  __mspabi_sral                          
-00032810  __mspabi_sral_1                        
-000327ec  __mspabi_sral_10                       
-000327e8  __mspabi_sral_11                       
-000327e4  __mspabi_sral_12                       
-000327e0  __mspabi_sral_13                       
-000327dc  __mspabi_sral_14                       
-000327d8  __mspabi_sral_15                       
-0003280c  __mspabi_sral_2                        
-00032808  __mspabi_sral_3                        
-00032804  __mspabi_sral_4                        
-00032800  __mspabi_sral_5                        
-000327fc  __mspabi_sral_6                        
-000327f8  __mspabi_sral_7                        
-000327f4  __mspabi_sral_8                        
-000327f0  __mspabi_sral_9                        
+00032506  __mspabi_divu                          
+000324ee  __mspabi_mpyi_f5hw                     
+000324d2  __mspabi_mpysl_f5hw                    
+00032506  __mspabi_remu                          
+0003254a  __mspabi_slli                          
+0003252e  __mspabi_sral                          
+00032394  __mspabi_sral_1                        
+00032370  __mspabi_sral_10                       
+0003236c  __mspabi_sral_11                       
+00032368  __mspabi_sral_12                       
+00032364  __mspabi_sral_13                       
+00032360  __mspabi_sral_14                       
+0003235c  __mspabi_sral_15                       
+00032390  __mspabi_sral_2                        
+0003238c  __mspabi_sral_3                        
+00032388  __mspabi_sral_4                        
+00032384  __mspabi_sral_5                        
+00032380  __mspabi_sral_6                        
+0003237c  __mspabi_sral_7                        
+00032378  __mspabi_sral_8                        
+00032374  __mspabi_sral_9                        
 0000e000  _c_int00_noargs                        
 0000fffe  _reset_vector                          
 00002b60  _stack                                 
-00032a10  _system_post_cinit                     
-00032a08  _system_pre_init                       
-00032a02  abort                                  
-00032696  apply_elementwise                      
-000329e4  apply_leakyrelu                        
+0003256a  _system_post_cinit                     
+00032562  _system_pre_init                       
+0003255c  abort                                  
+00032212  apply_elementwise                      
+0003253e  apply_leakyrelu                        
 00030bde  apply_model                            
-00032792  argmax                                 
-00032194  conv2d                                 
-00032850  dense                                  
-000328e0  dma_load                               
-00030fdc  filter_LEA                             
-00031dbc  filters_sum                            
-0003262a  flatten                                
-00032a0c  fp_add                                 
-000328b8  fp_leaky_relu                          
-00032a12  fp_linear                              
-000329b2  fp_mul                                 
-000329fa  fp_relu                                
+00032316  argmax                                 
+00031b98  conv2d                                 
+0003239a  dense                                  
+00032468  dma_load                               
+000313b0  filter_im2col                          
+000318e6  filters_sum                            
+00032146  flatten                                
+00032566  fp_add                                 
+00032440  fp_leaky_relu                          
+0003256c  fp_linear                              
+0003251c  fp_mul                                 
+00032554  fp_relu                                
 0000e000  fram_ipe_end                           
 0000e000  fram_ipe_start                         
 00004000  fram_rw_start                          
 0000e000  fram_rx_start                          
-00032816  init_clock_system                      
-000325bc  init_gpio                              
-000326f4  main                                   
-0003240a  matrix_add                             
-00031270  matrix_multiply                        
-00032344  maxpooling                             
-000324c4  maxpooling_filters                     
-0003292a  memset                                 
-00031f18  msp_copy_iq31                          
-00032056  msp_copy_q15                           
-00031c36  msp_deinterleave_q15                   
-0003294a  msp_iq31_to_q15                        
+000323d4  init_clock_system                      
+000320d8  init_gpio                              
+00032270  main                                   
+00031f26  matrix_add                             
+00031736  matrix_multiply                        
+0003157a  matrix_multiply_reduce                 
+00031d8c  matrix_multiply_vanilla                
+00031e60  maxpooling                             
+00031fe0  maxpooling_filters                     
+000324b2  memset                                 
+00031a5a  msp_copy_q15                           
 00001c12  msp_lea_ifg                            
-00032744  msp_lea_init                           
+000322c8  msp_lea_init                           
 0000e01c  msp_lea_isr                            
 00001c14  msp_lea_locked                         
-00031aa2  msp_mac_q15                            
-000318ca  msp_matrix_mpy_q15                     
-00032886  msp_matrix_shift_q15                   
-000314d4  msp_shift_iq31                         
-000316d6  msp_shift_q15                          
-0000e040  msp_shift_right_factor_iq31            
-0000e0c0  msp_shift_right_factor_q15             
-0003226e  padding_same                           
+000311d8  msp_matrix_mpy_q15                     
+0003240e  msp_matrix_shift_q15                   
+00030fe4  msp_shift_q15                          
+0000e040  msp_shift_right_factor_q15             
+00031cb6  padding_same                           
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -3692,13 +3677,12 @@ address   name
 0000e000  fram_rx_start                          
 0000e01c  msp_lea_isr                            
 0000e038  __TI_ISR_TRAP                          
-0000e040  msp_shift_right_factor_iq31            
-0000e0c0  msp_shift_right_factor_q15             
-0000e0f4  __TI_Handler_Table_Base                
-0000e0f8  __TI_CINIT_Base                        
-0000e0f8  __TI_Handler_Table_Limit               
-0000e108  __TI_CINIT_Limit                       
-0000e108  __TI_CINIT_Warm                        
+0000e040  msp_shift_right_factor_q15             
+0000e074  __TI_Handler_Table_Base                
+0000e078  __TI_CINIT_Base                        
+0000e078  __TI_Handler_Table_Limit               
+0000e088  __TI_CINIT_Limit                       
+0000e088  __TI_CINIT_Warm                        
 0000ffb4  __TI_int18                             
 0000ffb6  __TI_int19                             
 0000ffb8  __TI_int20                             
@@ -3738,70 +3722,66 @@ address   name
 0000fffc  __TI_int54                             
 0000fffe  _reset_vector                          
 00030bde  apply_model                            
-00030fdc  filter_LEA                             
-00031270  matrix_multiply                        
-000314d4  msp_shift_iq31                         
-000316d6  msp_shift_q15                          
-000318ca  msp_matrix_mpy_q15                     
-00031aa2  msp_mac_q15                            
-00031c36  msp_deinterleave_q15                   
-00031dbc  filters_sum                            
-00031f18  msp_copy_iq31                          
-00032056  msp_copy_q15                           
-00032194  conv2d                                 
-0003226e  padding_same                           
-00032344  maxpooling                             
-0003240a  matrix_add                             
-000324c4  maxpooling_filters                     
-00032544  __TI_auto_init_nobinit_nopinit_hold_wdt
-000325bc  init_gpio                              
-0003262a  flatten                                
-00032696  apply_elementwise                      
-000326f4  main                                   
-00032744  msp_lea_init                           
-00032792  argmax                                 
-000327d8  __mspabi_sral_15                       
-000327dc  __mspabi_sral_14                       
-000327e0  __mspabi_sral_13                       
-000327e4  __mspabi_sral_12                       
-000327e8  __mspabi_sral_11                       
-000327ec  __mspabi_sral_10                       
-000327f0  __mspabi_sral_9                        
-000327f4  __mspabi_sral_8                        
-000327f8  __mspabi_sral_7                        
-000327fc  __mspabi_sral_6                        
-00032800  __mspabi_sral_5                        
-00032804  __mspabi_sral_4                        
-00032808  __mspabi_sral_3                        
-0003280c  __mspabi_sral_2                        
-00032810  __mspabi_sral_1                        
-00032816  init_clock_system                      
-00032850  dense                                  
-00032886  msp_matrix_shift_q15                   
-000328b8  fp_leaky_relu                          
-000328e0  dma_load                               
-00032906  __TI_zero_init                         
-0003292a  memset                                 
-0003294a  msp_iq31_to_q15                        
-00032968  __mspabi_mpysl_f5hw                    
-00032984  __mspabi_mpyi_f5hw                     
-0003299c  __mspabi_divu                          
-0003299c  __mspabi_remu                          
-000329b2  fp_mul                                 
-000329c4  __mspabi_sral                          
-000329d4  __mspabi_slll                          
-000329e4  apply_leakyrelu                        
-000329f0  __mspabi_slli                          
-000329fa  fp_relu                                
-00032a02  C$$EXIT                                
-00032a02  abort                                  
-00032a08  _system_pre_init                       
-00032a0c  fp_add                                 
-00032a10  _system_post_cinit                     
-00032a12  fp_linear                              
+00030fe4  msp_shift_q15                          
+000311d8  msp_matrix_mpy_q15                     
+000313b0  filter_im2col                          
+0003157a  matrix_multiply_reduce                 
+00031736  matrix_multiply                        
+000318e6  filters_sum                            
+00031a5a  msp_copy_q15                           
+00031b98  conv2d                                 
+00031cb6  padding_same                           
+00031d8c  matrix_multiply_vanilla                
+00031e60  maxpooling                             
+00031f26  matrix_add                             
+00031fe0  maxpooling_filters                     
+00032060  __TI_auto_init_nobinit_nopinit_hold_wdt
+000320d8  init_gpio                              
+00032146  flatten                                
+00032212  apply_elementwise                      
+00032270  main                                   
+000322c8  msp_lea_init                           
+00032316  argmax                                 
+0003235c  __mspabi_sral_15                       
+00032360  __mspabi_sral_14                       
+00032364  __mspabi_sral_13                       
+00032368  __mspabi_sral_12                       
+0003236c  __mspabi_sral_11                       
+00032370  __mspabi_sral_10                       
+00032374  __mspabi_sral_9                        
+00032378  __mspabi_sral_8                        
+0003237c  __mspabi_sral_7                        
+00032380  __mspabi_sral_6                        
+00032384  __mspabi_sral_5                        
+00032388  __mspabi_sral_4                        
+0003238c  __mspabi_sral_3                        
+00032390  __mspabi_sral_2                        
+00032394  __mspabi_sral_1                        
+0003239a  dense                                  
+000323d4  init_clock_system                      
+0003240e  msp_matrix_shift_q15                   
+00032440  fp_leaky_relu                          
+00032468  dma_load                               
+0003248e  __TI_zero_init                         
+000324b2  memset                                 
+000324d2  __mspabi_mpysl_f5hw                    
+000324ee  __mspabi_mpyi_f5hw                     
+00032506  __mspabi_divu                          
+00032506  __mspabi_remu                          
+0003251c  fp_mul                                 
+0003252e  __mspabi_sral                          
+0003253e  apply_leakyrelu                        
+0003254a  __mspabi_slli                          
+00032554  fp_relu                                
+0003255c  C$$EXIT                                
+0003255c  abort                                  
+00032562  _system_pre_init                       
+00032566  fp_add                                 
+0003256a  _system_post_cinit                     
+0003256c  fp_linear                              
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
 ffffffff  __c_args__                             
 
-[1665 symbols]
+[1660 symbols]

@@ -11,7 +11,7 @@ matrix *dense(matrix *result, matrix *input, matrix *W, matrix *b, int16_t (*act
     /**
      * Implementation of a dense feed-forward layer using matrix operations.
      */
-    result = matrix_multiply(result, W, input, precision);
+    result = matrix_multiply_reduce(result, W, input, precision);
 
     // Only add bias if given 
     if (b != NULL_PTR) {
@@ -164,7 +164,7 @@ matrix *filter_simple(matrix *result, matrix *input, matrix *filter, uint16_t pr
 }
 
 
-matrix *filters_sum(matrix *result, matrix *input, matrix *filter, uint16_t numChannels, int16_t b, int16_t (*activation)(int16_t, uint16_t), uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols, uint16_t padding){
+matrix *filters_sum(matrix *result, matrix *input, matrix *filter, uint16_t numChannels, int16_t b, int16_t (*activation)(int16_t, uint16_t), uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols, uint16_t padding, uint16_t conv_numRows, uint16_t conv_numCols){
     int16_t *filter_head = filter->data;
     int16_t *input_head = input->data;
     uint16_t i, result_length = result->numRows * result->numCols, input_length = input->numRows * input->numCols, filter_length = filter->numRows * filter->numCols, input_numRows = input->numRows, input_numCols = input->numCols;
@@ -178,7 +178,15 @@ matrix *filters_sum(matrix *result, matrix *input, matrix *filter, uint16_t numC
             padding_same(input, input, filter, stride_numRows, stride_numCols);
         }
         #ifdef IS_MSP
-        filter_LEA(&temp, input, filter, precision, stride_numRows, stride_numCols);
+//        if (numChannels >= 16){
+//            filter_LEA(&temp, input, filter, precision, stride_numRows, stride_numCols);
+//        }
+//        else{
+//            filter_im2col(&temp, input, filter, precision, stride_numRows, stride_numCols);
+//        }
+        temp.numRows = conv_numRows;
+        temp.numCols = conv_numCols;
+        filter_im2col(&temp, input, filter, precision, stride_numRows, stride_numCols);
         #else
         filter_simple(&temp, input, filter, precision, stride_numRows, stride_numCols);
         #endif
@@ -197,10 +205,12 @@ matrix *filters_sum(matrix *result, matrix *input, matrix *filter, uint16_t numC
 matrix *conv2d(matrix *result, matrix *input, matrix *filter, uint16_t numFilters, uint16_t numChannels, int16_t *b, int16_t (*activation)(int16_t, uint16_t), uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols, uint16_t padding){
     uint16_t i, result_length = result->numRows * result->numCols, filter_length = filter->numRows * filter->numCols * numChannels;
     int16_t *filter_head = filter->data, *result_head = result->data;
+    uint16_t conv_numRows = (input->numRows - filter->numRows) / stride_numRows + 1;
+    uint16_t conv_numCols = (input->numCols - filter->numCols) / stride_numCols + 1;
     for (i = numFilters; i > 0; i --){
         filter->data = filter_head + (i - 1) * filter_length;
         result->data = result_head + (i - 1) * result_length;
-        filters_sum(result, input, filter, numChannels, b[i - 1], activation, precision, stride_numRows, stride_numCols, padding);
+        filters_sum(result, input, filter, numChannels, b[i - 1], activation, precision, stride_numRows, stride_numCols, padding, conv_numRows, conv_numCols);
     }
     return result;
 }

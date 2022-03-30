@@ -17,6 +17,80 @@ static uint16_t SPARSEMAX_BUFFER[NUM_OUTPUTS] = {0};
 DSPLIB_DATA(MULTIPLY_BUFFER, 4);
 static dtype MULTIPLY_BUFFER[LEA_RAM_LENGTH];
 
+matrix *filter_im2col(matrix* result, matrix *input, matrix *filter, uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols){
+    uint16_t filter_length = filter->numRows * filter->numCols;
+    uint16_t filter_offset = filter_length + (filter_length & 1);
+    uint16_t result_col_offset = result->numCols + (result->numCols & 1);
+
+    uint16_t i, j, m, k;
+    int16_t *filterSrc = MULTIPLY_BUFFER;
+
+    int16_t *inputSrc = MULTIPLY_BUFFER + (filter_offset << 1);
+    int16_t *resultSrc = inputSrc + result_col_offset * filter_offset;
+    int16_t *resultData = result->data;
+
+    for (i = 0; i < filter_length; i ++){
+        *(filterSrc) = filter->data[i] << 3;
+        filterSrc += 2;
+    }
+
+    if (filter_length & 1){
+        *(filterSrc ++) = 0;
+        *(filterSrc ++) = 0;
+    }
+
+    for (i = 0; i <= input->numRows - filter->numRows; i += stride_numRows){
+        for (j = 0; j <= input->numCols - filter->numCols; j += stride_numCols){
+            /* (i,j) is the coordinate of the top-left element of the area in the input that will be applied with filter */
+            for (m = i; m < i + filter->numRows; m ++) {
+                k = m * input->numCols + j;
+                dma_load(inputSrc, &(input->data[k]), filter->numCols);
+                inputSrc += filter->numCols;
+            }
+            if (filter_length & 1){
+                *(inputSrc ++) = 0;
+            }
+        }
+
+        if (result->numCols & 1){
+            for (j = 0; j < filter_offset; j ++){
+                *(inputSrc ++) = 0;
+            }
+        }
+
+        inputSrc = MULTIPLY_BUFFER + (filter_offset << 1);
+
+        msp_status status;
+        msp_matrix_mpy_q15_params mulParams;
+
+        // Initialze LEA metadata
+        mulParams.srcARows = result_col_offset;
+        mulParams.srcACols = filter_offset;
+        mulParams.srcBRows = filter_offset;
+        mulParams.srcBCols = 2;
+
+        // Perform matrix multiplication using the LEA
+        status = msp_matrix_mpy_q15(&mulParams, inputSrc, MULTIPLY_BUFFER, resultSrc);
+        msp_checkStatus(status);
+
+        msp_matrix_shift_q15_params shiftParams;
+        shiftParams.rows = result_col_offset;
+        shiftParams.cols = 2;
+        shiftParams.shift = 15 - precision - 3;
+
+        // Perform element-wise shift using the LEA
+        if (shiftParams.shift > 0) {
+            status = msp_matrix_shift_q15(&shiftParams, resultSrc, resultSrc);
+            msp_checkStatus(status);
+        }
+
+        for (j = 0; j < result->numCols; j ++){
+            *(resultData ++) = resultSrc[j << 1];
+        }
+    }
+    return result;
+}
+
 matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t precision, uint16_t stride_numRows, uint16_t stride_numCols){
     /*
      * LEA Implementation of one filter of a conv2d layer
@@ -32,8 +106,6 @@ matrix *filter_LEA(matrix* result, matrix *input, matrix *filter, uint16_t preci
     uint16_t filter_offset;
     uint16_t filter_length = filter_numRows * filter_numCols;
     dtype *resultData = result->data;
-    result->numRows = (input_numRows - filter_numRows) / stride_numRows + 1;
-    result->numCols = (input_numCols - filter_numCols) / stride_numCols + 1;
 
     if (filter_length & 1) filter_offset = filter_length + 1; // macParams.length must be a multiple of 2
 
@@ -154,6 +226,119 @@ matrix *matrix_neg(matrix *result, matrix *mat, uint16_t precision) {
     return scalar_product(result, mat, int_to_fp(-1, precision), precision);
 }
 
+
+matrix *matrix_multiply_reduce(matrix *result, matrix *mat1, matrix *mat2, uint16_t precision) {
+    /**
+     * Performs matrix multiplication and stores value in given result array. The implementation
+     * depends on whether or not we are compiling for the MSP430 device.
+     */
+
+    // Validate dimensions
+    if ((mat1->numCols != mat2->numRows) || (mat1->numRows != result->numRows) || (mat2->numCols != result->numCols)) {
+        return NULL_PTR;
+    }
+
+    // The result will be a [n, p] matrix
+    uint16_t n = mat1->numRows;
+    uint16_t m = mat1->numCols;
+    uint16_t p = mat2->numCols;
+    int16_t *resultData = result->data;
+    int16_t *mat1Data = mat1->data;
+
+    if (n * m + m * p + n * p > LEA_RAM_LENGTH){
+        if (n <= 1){
+            matrix_multiply_vanilla(result, mat1, mat2, precision);
+        }
+        else if (n & 1){
+            result->numRows = n >> 1;
+            mat1->numRows = n >> 1;
+            matrix_multiply_reduce(result, mat1, mat2, precision);
+
+            result->numRows = n >> 1;
+            mat1->numRows = n >> 1;
+            mat1->data = mat1Data + (n >> 1) * m;
+            result->data = resultData + (n >> 1) * p;
+            matrix_multiply_reduce(result, mat1, mat2, precision);
+
+            result->numRows = 1;
+            mat1->numRows = 1;
+            mat1->data = mat1Data + (n >> 1) * (m << 1);
+            result->data = resultData + (n >> 1) * (p << 1);
+            matrix_multiply_reduce(result, mat1, mat2, precision);
+
+            mat1->numRows = n;
+            mat1->data = mat1Data;
+            result->numRows = n;
+            result->numCols = p;
+            result->data = resultData;
+        }
+        else{
+            result->numRows = n >> 1;
+            mat1->numRows = n >> 1;
+            matrix_multiply_reduce(result, mat1, mat2, precision);
+
+            result->numRows = n >> 1;
+            mat1->numRows = n >> 1;
+            mat1->data = mat1Data + ((n * m) >> 1);
+            result->data = resultData + ((n * p) >> 1);
+            matrix_multiply_reduce(result, mat1, mat2, precision);
+
+            mat1->numRows = n;
+            mat1->data = mat1Data;
+            result->numRows = n;
+            result->numCols = p;
+            result->data = resultData;
+        }
+    }
+    else{
+        matrix_multiply(result, mat1, mat2, precision);
+    }
+    return result;
+}
+
+
+matrix *matrix_multiply_vanilla(matrix *result, matrix *mat1, matrix *mat2, uint16_t precision) {
+    /**
+     * Performs matrix multiplication and stores value in given result array. The implementation
+     * depends on whether or not we are compiling for the MSP430 device.
+     */
+
+    // Validate dimensions
+    if ((mat1->numCols != mat2->numRows) || (mat1->numRows != result->numRows) || (mat2->numCols != result->numCols)) {
+        return NULL_PTR;
+    }
+
+    // The result will be a [n, p] matrix
+    uint16_t n = mat1->numRows;
+    uint16_t m = mat1->numCols;
+    uint16_t p = mat2->numCols;
+
+    /*
+     * LEA RAM has the limit of 1800 for 16-bit data
+     */
+    uint16_t i, j, k;
+    uint16_t outerRow, innerRow, resultRow;
+    int16_t sum, prod;
+
+    for (i = n; i > 0; i--) {
+        outerRow = (i - 1) * m;  // Offset for the i^th row
+
+        for (j = p; j > 0; j--) {
+            sum = 0;
+
+            for (k = m; k > 0; k--) {
+                innerRow = (k - 1) * p;  // Offset for the k^th row
+                prod = fp_mul(mat1->data[outerRow + (k - 1)], mat2->data[innerRow + (j - 1)], precision);
+                sum = fp_add(sum, prod);
+            }
+
+            resultRow = (i - 1) * p;
+            result->data[resultRow + (j - 1)] = sum;
+        }
+    }
+
+    return result;
+}
 
 matrix *matrix_multiply(matrix *result, matrix *mat1, matrix *mat2, uint16_t precision) {
     /**
