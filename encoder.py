@@ -150,8 +150,8 @@ def export_model(model):
 #define LEA_RESERVED 2
 
 #define MODEL_ARRAY_LENGTH {len(encode(model))}
-#define MODEL_ARRAY_OUTPUT_LENGTH 8128
-#define MODEL_ARRAY_TEMP_LENGTH 8128
+#define MODEL_ARRAY_OUTPUT_LENGTH 16384
+#define MODEL_ARRAY_TEMP_LENGTH 16384
 #define PADDING_BUFFER_LENGTH 2048
 #define FILTER_BUFFER_LENGTH 1024
 #define INPUT_NUM_ROWS {model.layers[0].input_shape[1]}
@@ -162,7 +162,7 @@ def export_model(model):
 #define INPUT_LENGTH (INPUT_NUM_ROWS*INPUT_NUM_COLS*INPUT_NUM_CHANNELS)
 #define OUTPUT_LENGTH (OUTPUT_NUM_LABELS*LEA_RESERVED)
 
-#pragma LOCATION(MODEL_ARRAY, 0x10000)
+#pragma LOCATION(MODEL_ARRAY, 0x18000)
 #pragma PERSISTENT(MODEL_ARRAY)
 static dtype MODEL_ARRAY[MODEL_ARRAY_LENGTH] = {left_bracket} {output_str[:-1]} {right_bracket};
 
