@@ -6,6 +6,7 @@
 #include "decoder.h"
 
 /* used to save the results of each layer and prevent data overwrite */
+#pragma LOCATION(MODEL_ARRAY_OUTPUT, 0x10000)
 #pragma PERSISTENT(MODEL_ARRAY_OUTPUT)
 static int16_t MODEL_ARRAY_OUTPUT[MODEL_ARRAY_OUTPUT_LENGTH] = {0};
 #pragma PERSISTENT(MODEL_ARRAY_TEMP)
@@ -64,6 +65,9 @@ matrix *apply_model(matrix *output, matrix *input){
                 // execute dense layer
                 if (activation == RELU_ACTIVATION){
                     dense(output, input, &kernel, &bias, &fp_relu, FIXED_POINT_PRECISION);
+                }
+                else if (activation == SIGMOID_ACTIVATION){
+                    dense(output, input, &kernel, &bias, &fp_sigmoid, FIXED_POINT_PRECISION);
                 }
                 else{
                     dense(output, input, &kernel, &bias, &fp_linear, FIXED_POINT_PRECISION);
@@ -129,6 +133,9 @@ matrix *apply_model(matrix *output, matrix *input){
                 if (activation == RELU_ACTIVATION){
                     conv2d(output, input, &filters, numFilters, numChannels, bias_array, &fp_relu, FIXED_POINT_PRECISION, stride_numRows, stride_numCols, padding);
                 }
+                else if (activation == SIGMOID_ACTIVATION){
+                    conv2d(output, input, &filters, numFilters, numChannels, bias_array, &fp_sigmoid, FIXED_POINT_PRECISION, stride_numRows, stride_numCols, padding);
+                }
                 else{
                     conv2d(output, input, &filters, numFilters, numChannels, bias_array, &fp_linear, FIXED_POINT_PRECISION, stride_numRows, stride_numCols, padding);
                 }
@@ -156,10 +163,12 @@ matrix *apply_model(matrix *output, matrix *input){
                 output->numRows = input->numRows * input->numCols * numFilters;
                 output->numCols = LEA_RESERVED;
                 flatten(output, input, numFilters);
+                numFilters = 1;
             }
             /* SKIP FOR INFERENCE TIME IMPLEMENTATION - layer class 5 - Dropout Layer */
             else if (array[i] == DROPOUT_LAYER){
                 i += 1;
+                numFilters = 1;
             }
 
             /* copy output matrix and reference input to copied output */

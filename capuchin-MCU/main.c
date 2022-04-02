@@ -5,15 +5,6 @@
 
 #include "main.h"
 
-//static dtype input[9] = {1024, 2048, 512, 0, 256, 1024, 2048, 0, 0};
-//static matrix input_mat = {input, 3, 3};
-//
-//static dtype filter[4] = {1024, 512, 512, 0};
-//static matrix filter_mat = {filter, 2, 2};
-//
-//static dtype result[4] = {0};
-//static matrix result_mat = {result, 2, 2};
-
 void main(void){
 
     /* stop watchdog timer */

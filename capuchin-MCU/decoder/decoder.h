@@ -16,6 +16,7 @@
 #define DROPOUT_LAYER 5
 
 #define LINEAR_ACTIVATION 0
+#define SIGMOID_ACTIVATION 1
 #define RELU_ACTIVATION 2
 
 matrix *apply_model(matrix *output, matrix *input);
