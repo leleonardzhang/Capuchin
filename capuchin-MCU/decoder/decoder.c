@@ -14,43 +14,40 @@ static int16_t MODEL_ARRAY_TEMP[MODEL_ARRAY_TEMP_LENGTH] = {0};
 
 matrix *apply_model(matrix *output, matrix *input){
 
-    uint16_t i = 0;
     int16_t *array = MODEL_ARRAY;
     int16_t *bias_array;
 
-    uint16_t array_length = MODEL_ARRAY_LENGTH;
 
     uint16_t layer_class, activation, numChannels, filter_numRows, filter_numCols, stride_numRows, stride_numCols, filters_length, padding;
     uint16_t numFilters;
     output->data = MODEL_ARRAY_OUTPUT;
 
-    i = 0;
     // Sequential model
-    if (array[i] == 0){  // 1st element of the array tells the model type
-        i ++;
-        while (i != array_length){
+    if (*array == 0){  // 1st element of the array tells the model type
+        array ++;
+        while (array < MODEL_ARRAY_END){
             // next element of the array tells the layer class
 
             /* layer class 0 - DENSE */
-            if (array[i] == DENSE_LAYER){
+            if (*array == DENSE_LAYER){
                 numFilters = 1;
 
                 // extract and prepare layer parameters
-                layer_class = array[i];
-                activation = array[i+1];
-                uint16_t kernel_numRows = array[i+2];
-                uint16_t kernel_numCols = array[i+3];
-                uint16_t bias_numRows = array[i+4];
-                uint16_t bias_numCols = array[i+5];
-                i += 6;
+                layer_class = *array;
+                activation = *(array + 1);
+                uint16_t kernel_numRows = *(array + 2);
+                uint16_t kernel_numCols = *(array + 3);
+                uint16_t bias_numRows = *(array + 4);
+                uint16_t bias_numCols = *(array + 5);
+                array += 6;
                 uint16_t kernel_length = kernel_numRows * kernel_numCols;
                 uint16_t bias_length = bias_numRows * bias_numCols;
 
                 // extract layer weights
-                int16_t *kernel_array = &array[i];
-                i += kernel_length;
-                bias_array = &array[i];
-                i += bias_length;
+                int16_t *kernel_array = array;
+                array += kernel_length;
+                bias_array = array;
+                array += bias_length;
 
                 // prepare output
                 uint16_t output_numRows = kernel_numRows;
@@ -75,28 +72,28 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 1 - LeakyReLU */
-            else if (array[i] == LEAKY_RELU_LAYER){
+            else if (*array == LEAKY_RELU_LAYER){
                 output->numRows = input->numRows;
                 output->numCols = input->numCols;
                 apply_leakyrelu(output, input, FIXED_POINT_PRECISION);
-                i ++;
+                array ++;
             }
 
             /* layer class 2 - Conv2D */
-            else if (array[i] == CONV2D_LAYER){
+            else if (*array == CONV2D_LAYER){
 
                 // extract and prepare layer parameters
-                layer_class = array[i];
-                activation = array[i+1];
-                numFilters = array[i+2];
-                numChannels = array[i+3];
-                filter_numRows = array[i+4];
-                filter_numCols = array[i+5];
-                stride_numRows = array[i+6];
-                stride_numCols = array[i+7];
-                filters_length = array[i+8];
-                padding = array[i+9];
-                i += 10;
+                layer_class = *array;
+                activation = *(array + 1);
+                numFilters = *(array + 2);
+                numChannels = *(array + 3);
+                filter_numRows = *(array + 4);
+                filter_numCols = *(array + 5);
+                stride_numRows = *(array + 6);
+                stride_numCols = *(array + 7);
+                filters_length = *(array + 8);
+                padding = *(array + 9);
+                array += 10;
 
                 // prepare output
                 if (padding == 1){
@@ -121,12 +118,12 @@ matrix *apply_model(matrix *output, matrix *input){
                 }
 
                 // extract and prepare weights
-                int16_t *filters_array = array + i;
+                int16_t *filters_array = array;
                 matrix filters = {filters_array, filter_numRows, filter_numCols};
-                i += filters_length;
+                array += filters_length;
 
-                bias_array = array + i;
-                i += numFilters;
+                bias_array = array;
+                array += numFilters;
 
 
                 // execute conv2d layer
@@ -143,13 +140,13 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 3 - MaxPooling2D */
-            else if (array[i] == MAXPOOLING2D_LAYER){
-                uint16_t pool_numRows = array[i+1];
-                uint16_t pool_numCols = array[i+2];
-                stride_numRows = array[i+3];
-                stride_numCols = array[i+4];
-                padding = array[i+5];
-                i += 6;
+            else if (*array == MAXPOOLING2D_LAYER){
+                uint16_t pool_numRows = *(array + 1);
+                uint16_t pool_numCols = *(array + 2);
+                stride_numRows = *(array + 3);
+                stride_numCols = *(array + 4);
+                padding = *(array + 5);
+                array += 6;
 
                 output->numRows = input->numRows / pool_numRows;
                 output->numCols = input->numCols / pool_numCols;
@@ -158,16 +155,16 @@ matrix *apply_model(matrix *output, matrix *input){
             }
 
             /* layer class 4 - Conv2D Flatten */
-            else if (array[i] == FLATTEN_LAYER){
-                i += 1;
+            else if (*array == FLATTEN_LAYER){
+                array += 1;
                 output->numRows = input->numRows * input->numCols * numFilters;
                 output->numCols = LEA_RESERVED;
                 flatten(output, input, numFilters);
                 numFilters = 1;
             }
             /* SKIP FOR INFERENCE TIME IMPLEMENTATION - layer class 5 - Dropout Layer */
-            else if (array[i] == DROPOUT_LAYER){
-                i += 1;
+            else if (*array == DROPOUT_LAYER){
+                array += 1;
                 numFilters = 1;
             }
 
