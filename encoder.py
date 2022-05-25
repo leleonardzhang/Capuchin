@@ -135,6 +135,8 @@ def export_model(model):
     for element in encode(model):
         output_str = output_str + f"{element},"
         count += 1
+        if count % 1000 == 999:
+            output_str = output_str + '\n'
     left_bracket = '{'
     right_bracket = '}'
     output_str = f"""#include <stdint.h>
@@ -150,6 +152,7 @@ def export_model(model):
 #define LEA_RESERVED 2
 
 #define MODEL_ARRAY_LENGTH {len(encode(model))}
+#define MODEL_ARRAY_END {hex(len(encode(model) * 2) + 98304)}
 #define MODEL_ARRAY_OUTPUT_LENGTH 16384
 #define MODEL_ARRAY_TEMP_LENGTH 16384
 #define PADDING_BUFFER_LENGTH 2048
